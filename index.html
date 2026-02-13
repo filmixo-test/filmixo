@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filmixo | Cinematic Forensic Lab</title>
+    <meta name="description" content="Official Filmixo Lab. Deconstructing cinema through forensic audits and narrative entropy analysis.">
+    
+    <!-- SEO & Performance -->
+    <link rel="canonical" href="https://filmixo.com" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Static Header (No Flicker) -->
+    <header>
+        <a href="index.html" class="brand">
+            <div class="glow-dot"></div>
+            <h1>FILMIXO</h1>
+        </a>
+        <nav class="nav-bar">
+            <a href="index.html" class="nav-btn"><i class="fa-house"></i></a>
+            <button id="search-trigger-btn" class="nav-btn"><i class="fa-magnifying-glass"></i></a>
+            <a href="mailto:lab@filmixo.com" class="nav-btn"><i class="fa-envelope"></i></a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Top 2 Intelligent Categories -->
+        <div id="cat-section-1"></div>
+        <div id="cat-section-2"></div>
+
+        <!-- Recent Audits (The Main Feed) -->
+        <h2 class="section-title">Latest Forensic Audits</h2>
+        <div id="recent-posts-container" class="slider-container">
+            <!-- Cards will be injected here by home.js -->
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 50px;">
+            <button id="load-more-btn" class="btn-gold">SYNCHRONIZE MORE DATA</button>
+        </div>
+
+        <!-- Remaining 4 Categories -->
+        <div id="cat-section-3"></div>
+        <div id="cat-section-4"></div>
+        <div id="cat-section-5"></div>
+        <div id="cat-section-6"></div>
+    </main>
+
+    <!-- Dynamic Footer Wrapper -->
+    <div id="footer-placeholder"></div>
+
+    <!-- Core Scripts -->
+    <script type="module" src="engine.js"></script>
+    <script type="module" src="header-logic.js"></script>
+    <script type="module" src="home.js"></script>
+    <script type="module" src="footer-bundle.js"></script>
+
+</body>
+</html>

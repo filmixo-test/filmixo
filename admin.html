@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filmixo | Command Center</title>
+    <style>
+        :root { --bg: #050505; --card: #111; --gold: #D4AF37; --text: #e0e0e0; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; padding: 20px; display: flex; justify-content: center; }
+        .admin-box { width: 100%; max-width: 800px; background: var(--card); padding: 30px; border-radius: 12px; border: 1px solid rgba(212,175,55,0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h2 { color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 25px; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .field { margin-bottom: 20px; }
+        label { display: block; font-size: 11px; color: var(--gold); margin-bottom: 8px; text-transform: uppercase; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 4px; font-size: 14px; transition: 0.3s; }
+        input:focus, textarea:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 5px rgba(212,175,55,0.3); }
+        #fullArticle { height: 350px; line-height: 1.6; }
+        .btn-sync { width: 100%; padding: 16px; background: var(--gold); color: #000; border: none; font-weight: bold; text-transform: uppercase; cursor: pointer; margin-top: 10px; letter-spacing: 1px; transition: 0.3s; }
+        .btn-sync:hover { opacity: 0.85; transform: translateY(-2px); }
+        .status { margin-top: 15px; font-size: 13px; text-align: center; font-weight: bold; }
+        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="admin-box">
+    <h2>Filmixo | Command Center</h2>
+    <form id="upload-form">
+        <div class="grid">
+            <div class="field">
+                <label>Audit Title</label>
+                <input type="text" id="title" placeholder="Full Title Name" required>
+            </div>
+            <div class="field">
+                <label>Intelligence Category</label>
+                <select id="category" required>
+                    <option value="Legacy Deconstruction">Legacy Deconstruction</option>
+                    <option value="Narrative Entropy">Narrative Entropy</option>
+                    <option value="Cinematic Forensics">Cinematic Forensics</option>
+                    <option value="Speculative Assets">Speculative Assets</option>
+                    <option value="Auteur Credibility">Auteur Credibility</option>
+                    <option value="Optical Physics">Optical Physics</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Thumbnail Asset (URL)</label>
+                <input type="url" id="thumbnail" placeholder="https://filmixo.app/image.jpg" required>
+            </div>
+            <div class="field">
+                <label>YouTube ID</label>
+                <input type="text" id="trailerId" placeholder="e.g. EOwTdTZA8D8" required>
+            </div>
+            <div class="field">
+                <label>Timeline Year</label>
+                <input type="text" id="date" placeholder="e.g. 2026" required>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Full Forensic Discourse (Paste Entire Content Here)</label>
+            <textarea id="fullArticle" placeholder="Paste all 5 paragraphs here. Use 'Enter' to separate them. System will auto-detect splits." required></textarea>
+        </div>
+
+        <button type="submit" class="btn-sync" id="submit-btn">Synchronize Asset to Lab</button>
+        <div id="status" class="status"></div>
+    </form>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCAsD8wucLsudzY5oNbiixLGyjN2apdV0Q",
+        authDomain: "my-ad-analytics-4560a.firebaseapp.com",
+        projectId: "my-ad-analytics-4560a",
+        storageBucket: "my-ad-analytics-4560a.firebasestorage.app",
+        messagingSenderId: "104213283950",
+        appId: "1:104213283950:web:b5a25ecd54df809625127f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    document.getElementById('upload-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submit-btn');
+        const status = document.getElementById('status');
+        
+        // --- Smart Split Logic ---
+        // এটি টেক্সটকে নিউ-লাইন (\n) দিয়ে ভাগ করে এবং কোনো ফাঁকা জায়গা থাকলে তা মুছে দেয়
+        const rawText = document.getElementById('fullArticle').value;
+        const paragraphArray = rawText.split(/\n+/).map(p => p.trim()).filter(p => p.length > 0);
+
+        // আপনি যেহেতু ৫টি প্যারাগ্রাফের রুল চেয়েছেন, তাই একটি ছোট চেক রাখা হলো
+        if (paragraphArray.length < 5) {
+            status.style.color = "#ff9900";
+            status.innerText = `Warning: Detected ${paragraphArray.length} paragraphs. 5 required for full layout.`;
+            // এখানে চাইলে আপনি সাবমিট বন্ধ করতে পারেন, তবে আমি এলাউ করছি যেন আপনি কাজ চালাতে পারেন।
+        }
+
+        btn.disabled = true;
+        btn.innerText = "UPLOADING ASSET...";
+
+        const movieData = {
+            title: document.getElementById('title').value,
+            category: document.getElementById('category').value,
+            thumbnail: document.getElementById('thumbnail').value,
+            trailerId: document.getElementById('trailerId').value,
+            date: document.getElementById('date').value,
+            paragraphs: paragraphArray, // অটোমেটিক তৈরি হওয়া অ্যারে
+            views: 0,
+            likes: 0,
+            timestamp: serverTimestamp()
+        };
+
+        try {
+            await addDoc(collection(db, "movies"), movieData);
+            status.style.color = "#00ff88";
+            status.innerText = "SUCCESS: DATA SYNCHRONIZED WITH LAB.";
+            document.getElementById('upload-form').reset();
+        } catch (error) {
+            status.style.color = "#ff4444";
+            status.innerText = "CRITICAL ERROR: SYNC FAILED.";
+            console.error(error);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Synchronize Asset to Lab";
+        }
+    });
+</script>
+
+</body>
+</html>
