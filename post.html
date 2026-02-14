@@ -1,0 +1,117 @@
+<!DOCTYPE html>  
+<html lang="en-US">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>FILMIXO | The Harvard of Movie Analysis 🕵️</title>  
+    <meta name="description" id="dynamic-desc" content="FILMIXO: Expert movie reviews, Director & Actor insights, and technical analysis (VFX/Audio). Watch trailers and download HD movies.">
+    <meta name="keywords" content="expert movie review, filmixo analysis, vfx review, director insights, audience reaction, movie download, hd movies">
+    <meta name="author" content="FILMIXO Editorial Team">
+    
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://www.gstatic.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="preload" href="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js" as="script" crossorigin fetchpriority="high"> 
+    <link rel="preload" href="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js" as="script" crossorigin fetchpriority="high">  
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet" media="print" onload="this.media='all'"> 
+     
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
+
+    <meta property="og:type" content="video.movie">
+    <meta property="og:site_name" content="FILMIXO">
+    <meta property="og:title" id="og-title" content="FILMIXO | Professional Movie Insights & HD Downloads">
+    <meta property="og:description" id="og-desc" content="Explore research-based reviews and technical breakdowns of the latest films. Quality and Accuracy guaranteed.">
+    <meta property="og:image" content="https://filmixo.vercel.app/thumbel/filmixo (1).jpg">
+    
+    <script type="application/ld+json" id="dynamic-schema">
+    {
+      "@context": "https://schema.org",
+      "@type": "Movie",
+      "name": "FILMIXO",
+      "image": "https://raw.githubusercontent.com/Filmixo/movie/refs/heads/main/thumbel/filmixo (1).jpg",
+      "description": "Professional Movie Reviews and HD Insights."
+    }
+    </script>
+
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://prototypesorting.com">
+    <link rel="dns-prefetch" href="https://prototypesorting.com">
+    
+    <script src="https://prototypesorting.com/8e/8f/e0/8e8fe0bd662ff02c455fafbcaf1c9369.js" async></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>  
+<body>  
+
+<template id="ad-src-top"><script>atOptions={'key':'caf6ea59dc8711a1d0bfb5ad9dd98638','format':'iframe','height':90,'width':728,'params':{}};</script><script src="https://prototypesorting.com/caf6ea59dc8711a1d0bfb5ad9dd98638/invoke.js"></script></template>
+<template id="ad-src-title"><script>atOptions={'key':'da9154b956691d2aa7c677010e7b6501','format':'iframe','height':60,'width':468,'params':{}};</script><script src="https://prototypesorting.com/da9154b956691d2aa7c677010e7b6501/invoke.js"></script></template>
+<template id="ad-src-p1"><script>atOptions={'key':'dbae51ad68fb44f5c8a6b535812c9f54','format':'iframe','height':250,'width':300,'params':{}};</script><script src="https://prototypesorting.com/dbae51ad68fb44f5c8a6b535812c9f54/invoke.js"></script></template>
+<template id="ad-src-p2"><script>atOptions={'key':'54012419216a1778423343e5706cb92e','format':'iframe','height':300,'width':160,'params':{}};</script><script src="https://prototypesorting.com/54012419216a1778423343e5706cb92e/invoke.js"></script></template>
+<template id="ad-src-mid"><script async="async" data-cfasync="false" src="https://prototypesorting.com/1608cb6a976841a38e804d64801334bb/invoke.js"></script><div id="container-1608cb6a976841a38e804d64801334bb"></div></template>
+<template id="ad-src-video"><script>atOptions={'key':'dbae51ad68fb44f5c8a6b535812c9f54','format':'iframe','height':250,'width':300,'params':{}};</script><script src="https://prototypesorting.com/dbae51ad68fb44f5c8a6b535812c9f54/invoke.js"></script></template>
+
+<div class="main-wrapper" id="app-wrapper">  
+
+    <header class="main-header">
+        <div class="header-left">
+            <div class="home-nav-icon" onclick="location.href='index.html'"><i class="fa-house"></i></div>
+            <h1 class="website-name">FILMIXO</h1>
+            <span class="active-glow"></span>
+        </div>
+
+        <div class="header-actions-group">
+            <a href="search.html" class="action-item-btn">
+                <i class="fa-magnifying-glass"></i>
+            </a>
+            
+            <div class="action-item-btn" onclick="sendEmail()">
+                <i class="fa-envelope"></i>
+            </div>
+
+            <div class="action-item-btn" onclick="shareProfile()">
+                <i class="fa-share-nodes"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="status-section-area">
+        <div class="compact-stats">
+            <div class="stat-left"><i class="fa-location-dot"></i>🇺🇲 United State</div>
+            <div class="stat-center">Analysed by: <b>Ashiqur</b></div> 
+            <div class="stat-right" id="status-time-slot">Loading...</div>
+        </div>
+    </div>
+
+    <div class="section-title-bar">
+        <div class="title-divider">
+            <span>Post Details</span>
+        </div>
+    </div>
+
+    <main id="post-details-container">
+        <div id="skeleton-loader" style="padding:20px; background:#fff; min-height:400px;">
+            <div style="width:100%; height:250px; background:#d1d5db; border-radius:8px; margin-bottom:15px;"></div>
+            <div style="width:80%; height:30px; background:#d1d5db; border-radius:4px; margin-bottom:10px;"></div>
+            <div style="width:100%; height:15px; background:#d1d5db; border-radius:4px; margin-bottom:8px;"></div>
+            <div style="width:95%; height:15px; background:#d1d5db; border-radius:4px; margin-bottom:8px;"></div>
+            <div style="width:90%; height:15px; background:#d1d5db; border-radius:4px;"></div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+
+</div>
+
+<script type="module">
+    import { sh } from './utils.js';
+    import './header-logic.js';
+    import './footer-bundle.js';
+    import './post-logic.js';
+    
+    window.sh = sh;
+</script>
+</body>  
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>FILMIXO | The Harvard of Movie Analysis 🕵️</title>
+    <meta name="description" content="FILMIXO is your ultimate destination for HD movie downloads, expert reviews, and latest cinema updates. Explore professional analysis and trending blockbusters."> 
+    <meta name="keywords" content="movies, hd reviews, cinema, blockbuster, filmixo, download, streaming, analysis">
+    <meta name="google-site-verification" content="7mf-JoFsAUYSMwh3438cVMiSN-WZ9VYu8QqrjCXmksM" />
+
+    <link rel="dns-prefetch" href="https://gstatic.com">
+    <link rel="dns-prefetch" href="https://firestore.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link rel="preload" as="image" href="https://filmixo.vercel.app/thumbel/filmixo.jpeg" fetchpriority="high">
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+   
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://filmixo.github.io/movie/">
+    <meta property="og:title" content="FILMIXO - Watch & Download Latest HD Movies">
+    <meta property="og:description" content="FILMIXO is your ultimate destination for HD movie downloads and expert reviews.">
+    <meta property="og:image" content="https://filmixo.vercel.app/thumbel/filmixo.jpeg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://filmixo.github.io/movie/">
+    <meta name="twitter:title" content="FILMIXO - Watch & Download Latest HD Movies">
+    <meta name="twitter:description" content="FILMIXO is your ultimate destination for HD movie downloads and expert reviews.">
+    <meta name="twitter:image" content="https://filmixo.vercel.app/thumbel/filmixo.jpeg">
+
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="https://filmixo.github.io/movie/sitemap.xml">
+    <link rel="search" type="application/opensearchdescription+xml" title="FILMIXO Search" href="https://filmixo.github.io/movie/index.html?search={search_term_string}">
+    <script type="application/ld+json" id="homepage-schema"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-container">
+        <header class="main-header">
+            <div class="header-left">
+                <div class="home-nav-icon" onclick="location.href='index.html'"><i class="fa-house"></i></div>
+                <h1 class="website-name">FILMIXO</h1>
+                <span class="active-glow"></span>
+            </div>
+
+            <div class="header-actions-group">
+                <a href="search.html" class="action-item-btn">
+                    <i class="fa-magnifying-glass"></i>
+                </a>
+                
+                <div class="action-item-btn" onclick="sendEmail()">
+                    <i class="fa-envelope"></i>
+                </div>
+
+                <div class="action-item-btn" onclick="shareProfile()">
+                    <i class="fa-share-nodes"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="status-section-area">
+            <div class="compact-stats">
+                <div class="stat-left"><i class="fa-location-dot"></i>🇺🇲 United State</div>
+                <div class="stat-center">Analysed by: <b>Ashiqur</b></div> 
+                <div class="stat-right">Cases Analyzed: <b id="total-videos-count" style="opacity:0;">0</b></div>
+            </div>
+        </div>
+        
+        <div id="cover-slider" class="cover-photo"><div class="intro-text">FILMIXO</div></div>
+        
+        <div class="section-title-bar">
+            <div class="title-divider">
+                <span>Latest Posts</span>
+            </div>
+        </div>
+
+        <main id="main-content">
+            <div id="feed-container"></div>
+            <div id="load-more-section" class="load-more-container">
+                <button id="manual-load-btn" class="btn-premium-load" onclick="handleManualLoad()">Show More Analysis</button>
+            </div>
+            <div id="sentinel"><div class="wave-loader"><div></div><div></div><div></div></div></div>
+        </main>
+        
+        <div id="footer-placeholder"></div>
+    </div> 
+    
+    <script type="module">
+        import './header-logic.js';
+        import './footer-bundle.js';
+        import './home-logic.js';
+    </script>
+</body>
+</html>
