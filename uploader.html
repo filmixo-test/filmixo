@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filmixo Master Control</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #1da1f2; --accent: #f5820d; --bg: #0b0f13; --surface: #161b22; --field-bg: #0d1117; --border: #30363d; --text: #e6edf3; --text-muted: #8b949e; --success: #238636; --error: #f85149; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 15px 10px; overflow-y: scroll; }
+        
+        /* SHAKE FIX & SMOOTH LOAD */
+        .master-container { width: 100%; max-width: 950px; visibility: hidden; opacity: 0; transition: opacity 0.5s ease; }
+        
+        /* HEADER REDESIGN */
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; width: 100%; }
+        .header-left { text-align: left; }
+        .brand-title { font-size: 18px; font-weight: 800; color: white; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+        .brand-title i { color: var(--accent); font-size: 16px; }
+        .brand-subtitle { color: var(--text-muted); font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        
+        #logout-btn { background: rgba(248, 81, 73, 0.1); color: var(--error); border: 1px solid var(--error); padding: 6px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        #logout-btn:hover { background: var(--error); color: white; }
+
+        .nav-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { background: var(--surface); color: var(--text-muted); border: 1px solid var(--border); padding: 8px 18px; border-radius: 50px; font-weight: 700; font-size: 11px; cursor: pointer; transition: 0.3s; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+        .tab-btn.active { background: rgba(245, 130, 13, 0.15); color: var(--accent); border-color: var(--accent); }
+
+        .panel-section { display: none; animation: fadeIn 0.4s ease-out; }
+        .panel-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .section-label { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--accent); margin: 20px 0 10px 0; letter-spacing: 1px; border-left: 3px solid var(--accent); padding-left: 10px; }
+        
+        /* ALL FIELDS STACKED VERTICALLY */
+        .grid-2 { display: flex; flex-direction: column; gap: 15px; }
+        .input-group { margin-bottom: 15px; }
+        label, .data-label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 6px; color: var(--text-muted); text-transform: uppercase; }
+
+        input, textarea, .editable-box { width: 100%; background: var(--field-bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 15px; color: white; font-size: 14px; outline: none; transition: 0.2s; }
+        textarea { min-height: 50px; field-sizing: content; resize: none; }
+        #up_paragraphs, #edit-paragraphs { min-height: 150px; line-height: 1.6; }
+        .editable-box { min-height: 50px; white-space: pre-wrap; word-break: break-word; }
+        input:focus, textarea:focus, .editable-box:focus { border-color: var(--primary); background: #0f131a; }
+
+        /* SEARCH AREA */
+        .search-area { background: var(--surface); padding: 15px; border-radius: 10px; border: 1px solid var(--border); display: flex; gap: 10px; margin-bottom: 20px; }
+        .search-area input { flex: 1; }
+        .search-btn { background: var(--primary); color: white; border: none; padding: 0 25px; border-radius: 8px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+
+        /* ACTION BUTTONS (Update/Delete Side-by-Side) */
+        .action-area { display: flex; gap: 15px; justify-content: center; margin-top: 25px; flex-wrap: nowrap; }
+        .btn-action { padding: 8px 20px; border-radius: 50px; font-size: 11px; font-weight: 800; cursor: pointer; text-transform: uppercase; border: none; transition: 0.3s; color: white; width: auto; min-width: 140px; }
+        .btn-publish { background: var(--accent); box-shadow: 0 4px 12px rgba(245, 130, 13, 0.2); display: block; margin: 0 auto; }
+        .btn-update { background: var(--success); }
+        .btn-delete { background: var(--error); }
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .status-msg { margin-top: 20px; text-align: center; font-weight: 700; font-size: 13px; min-height: 20px; }
+
+        #auth-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .auth-card { background: var(--surface); padding: 40px; border-radius: 15px; border: 1px solid var(--border); width: 100%; max-width: 400px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div id="auth-overlay">
+    <div class="auth-card">
+        <div class="brand-title" style="justify-content:center; margin-bottom: 25px;"><i class="fa-solid fa-lock"></i> Admin Login</div>
+        <div class="input-group" style="text-align:left;">
+            <label>Admin Email</label>
+            <input type="email" id="login-email" placeholder="admin@filmixo.com">
+        </div>
+        <div class="input-group" style="text-align:left;">
+            <label>Password</label>
+            <input type="password" id="login-password" placeholder="••••••••">
+        </div>
+        <button class="btn-action btn-publish" style="width:100%; max-width:none;" id="login-btn">Secure Access</button>
+        <div id="auth-status" class="status-msg"></div>
+    </div>
+</div>
+
+<div class="master-container" id="main-panel">
+    <header>
+        <div class="header-left">
+            <div class="brand-title"><i class="fa-solid fa-film"></i> Filmixo Movie Analysis</div>
+            <div class="brand-subtitle">Master Control Panel</div>
+        </div>
+        <button id="logout-btn"><i class="fa-solid fa-power-off"></i> Logout</button>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('uploader')"><i class="fa-solid fa-plus"></i> Uploader</button>
+        <button class="tab-btn" onclick="switchTab('controller')"><i class="fa-solid fa-gear"></i> Controller</button>
+    </div>
+
+    <div id="uploader-section" class="panel-section active">
+        <div class="section-label">Movie Information</div>
+        <div class="input-group"><label>Movie Title</label><textarea id="up_title" placeholder="Enter title..."></textarea></div>
+        <div class="input-group"><label>Thumbnail URL</label><textarea id="up_media" placeholder="https://..."></textarea></div>
+        
+        <div class="grid-2">
+            <div class="input-group"><label>Duration</label><input type="text" id="up_duration"></div>
+            <div class="input-group"><label>YouTube Link/ID</label><input type="text" id="up_ytInput" placeholder="Paste link here"></div>
+            <div class="input-group"><label>Custom Slug (Optional - e.g. salar-2)</label><input type="text" id="up_slug" placeholder="Leave blank for random ID"></div>
+            <div class="input-group"><label>Read More (Optional Link)</label><input type="url" id="up_readMore" placeholder="https://example.com"></div>
+        </div>
+
+        <div class="section-label">Detailed Analysis</div>
+        <div class="input-group"><label>Article Paragraphs (New line for new p)</label><textarea id="up_paragraphs" placeholder="Write movie details..."></textarea></div>
+        
+        <div class="action-area"><button class="btn-action btn-publish" id="pubBtn" onclick="publishToCloud()">🚀 Publish Content</button></div>
+        <div id="up_status" class="status-msg"></div>
+    </div>
+
+    <div id="controller-section" class="panel-section">
+        <div class="search-area">
+            <input type="text" id="ctrl_searchId" placeholder="Paste Content ID here...">
+            <button class="search-btn" onclick="fetchData()"><i class="fa-solid fa-search"></i> Find</button>
+        </div>
+
+        <div id="ctrl-content-display" style="display: none;">
+            <div class="section-label">Update Content</div>
+            <div class="input-group"><span class="data-label">Edit Title</span><div id="edit-title" class="editable-box" contenteditable="true"></div></div>
+            <div class="input-group"><span class="data-label">Edit Poster</span><div id="edit-media" class="editable-box" contenteditable="true"></div></div>
+            
+            <div class="grid-2">
+                <div class="input-group"><span class="data-label">Edit Duration</span><div id="edit-duration" class="editable-box" contenteditable="true"></div></div>
+                <div class="input-group"><span class="data-label">Edit YouTube Embed Code</span><div id="edit-yt" class="editable-box" contenteditable="true"></div></div>
+                <div class="input-group"><span class="data-label">Edit Read More Link</span><div id="edit-readMore" class="editable-box" contenteditable="true"></div></div> 
+            </div>
+
+            <div class="input-group"><span class="data-label">Edit Paragraphs</span><div id="edit-paragraphs" class="editable-box" contenteditable="true"></div></div>
+            
+            <div class="action-area">
+                <button class="btn-action btn-update" id="upBtn" onclick="updateData()">🚀 Update</button>
+                <button class="btn-action btn-delete" id="delBtn" onclick="deleteData()">🗑️ Delete</button>
+            </div>
+        </div>
+        <div id="ctrl_status" class="status-msg"></div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, increment, runTransaction } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"; 
+
+    const firebaseConfig = { apiKey: "AIzaSyCAsD8wucLsudzY5oNbiixLGyjN2apdV0Q", authDomain: "my-ad-analytics-4560a.firebaseapp.com", projectId: "my-ad-analytics-4560a", storageBucket: "my-ad-analytics-4560a.firebasestorage.app", messagingSenderId: "104213283950", appId: "1:104213283950:web:b5a25ecd54df809625127f" };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const overlay = document.getElementById('auth-overlay');
+    const mainPanel = document.getElementById('main-panel');
+
+    onAuthStateChanged(auth, (user) => { 
+        if (user && user.uid === "IPxYb7uiFdMwLj7oZnnqNKWIzcL2") { 
+            overlay.style.display = 'none'; 
+            mainPanel.style.visibility = 'visible';
+            mainPanel.style.opacity = '1';
+        } else { 
+            overlay.style.display = 'flex'; 
+            mainPanel.style.visibility = 'hidden';
+            mainPanel.style.opacity = '0';
+        } 
+    });
+
+    document.getElementById('login-btn').onclick = async () => {
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-password').value;
+        try { await signInWithEmailAndPassword(auth, email, pass); } catch (e) { document.getElementById('auth-status').innerHTML = `<span style="color:var(--error)">Access Denied!</span>`; }
+    };
+    document.getElementById('logout-btn').onclick = () => signOut(auth);
+
+    window.switchTab = (tab) => { 
+        document.querySelectorAll('.panel-section, .tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tab+'-section').classList.add('active');
+        document.querySelectorAll('.tab-btn')[tab === 'uploader' ? 0 : 1].classList.add('active');
+    };
+
+        function generateId() {
+        const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        let res = '';
+        for (let i = 0; i < 6; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
+        return res;
+    }
+
+    const formatSlug = (text) => {
+        return text.toString().toLowerCase().trim()
+            .replace(/\s+/g, '-')     
+            .replace(/[^\w-]+/g, '')  
+            .replace(/--+/g, '-');    
+    };
+
+    document.getElementById('up_slug').addEventListener('input', (e) => {
+        e.target.value = formatSlug(e.target.value);
+    });
+
+    const getYTId = (input) => { const m = input.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/); return (m && m[2].length == 11) ? m[2] : input.trim(); };
+    
+    function validateData(data) {
+        if (data.title.length < 3) return "Title too short!";
+        if (!data.mediaImage.startsWith("http")) return "Invalid Image Link!";
+        return null;
+    }
+
+    // --- PUBLISH LOGIC: MANIFEST SYNC ---
+        window.publishToCloud = async function() {
+        const status = document.getElementById('up_status');
+        const btn = document.getElementById('pubBtn');
+        const customSlug = document.getElementById('up_slug').value.trim();
+        const finalId = customSlug || generateId();
+        const now = new Date().toISOString();
+        const vid = getYTId(document.getElementById('up_ytInput').value);
+        const titleVal = document.getElementById('up_title').value.trim();
+        
+        const genKeys = (t) => {
+            if (!t) return [];
+            const clean = t.toLowerCase().replace(/[^\w\s]/g, ' ');
+            const words = clean.split(/\s+/).filter(w => w.length > 1);
+            return [...new Set(words)];
+        };
+
+        const data = { 
+            id: finalId, 
+            title: titleVal, 
+            keywords: genKeys(titleVal),
+            mediaImage: document.getElementById('up_media').value.trim(), 
+            videoDuration: document.getElementById('up_duration').value, 
+            readMore: document.getElementById('up_readMore').value.trim() || "",
+            uploadTime: now, 
+            lastUpdated: now, 
+            youtubeEmbed: vid ? `<iframe src="https://www.youtube.com/embed/${vid}" frameborder="0" allowfullscreen></iframe>` : "", 
+            paragraphs: document.getElementById('up_paragraphs').value.split('\n').filter(p => p.trim() !== '') 
+        };
+        
+        const error = validateData(data);
+        if(error) { status.innerHTML = `<span style="color:var(--error)">${error}</span>`; return; }
+
+        try {
+            btn.disabled = true; 
+            status.innerText = "Checking Availability...";
+            const docRef = doc(db, "posts", finalId);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                status.innerHTML = `<span style="color:var(--error)">Error: Slug or ID already exists!</span>`;
+                btn.disabled = false; return;
+            }
+
+            status.innerText = "Publishing...";
+            await runTransaction(db, async (transaction) => {
+                const statsRef = doc(db, "total_collection", "global_stats");
+                const statsSnap = await transaction.get(statsRef);
+                let allIds = statsSnap.exists() ? statsSnap.data().allIds || [] : [];
+                let total = statsSnap.exists() ? statsSnap.data().total_posts || 0 : 0;
+                
+                allIds.unshift({ id: finalId, t: now });
+
+                transaction.set(docRef, data);
+                transaction.set(statsRef, { 
+                    allIds: allIds, 
+                    total_posts: total + 1, 
+                    lastGlobalUpdate: now 
+                }, { merge: true });
+            });
+
+            status.innerHTML = `<span style="color:var(--success)">✅ Published! ID: ${finalId}</span>`;
+            setTimeout(() => location.reload(), 1500);
+        } catch (e) { status.innerHTML = `<span style="color:var(--error)">Error Publishing</span>`; btn.disabled = false; }
+    };
+    
+    // --- FETCH LOGIC ---
+        window.fetchData = async () => {
+        const searchVal = document.getElementById('ctrl_searchId').value.trim();
+        const status = document.getElementById('ctrl_status');
+        if(!searchVal) return;
+        try {
+            status.innerText = "Searching...";
+            const snap = await getDoc(doc(db, "posts", searchVal));
+            if (snap.exists()) {
+                const d = snap.data(); 
+                window.currentId = searchVal;
+                document.getElementById('ctrl-content-display').style.display = 'block';
+                document.getElementById('edit-title').innerText = d.title;
+                document.getElementById('edit-media').innerText = d.mediaImage;
+                document.getElementById('edit-duration').innerText = d.videoDuration;
+                document.getElementById('edit-yt').innerText = d.youtubeEmbed;
+                document.getElementById('edit-readMore').innerText = d.readMore || ""; 
+                document.getElementById('edit-paragraphs').innerText = d.paragraphs.join('\n\n');
+                status.innerHTML = `<span style="color:var(--success)">Found!</span>`;
+            } else { 
+                status.innerHTML = `<span style="color:var(--error)">Slug or ID Not Found!</span>`; 
+            }
+        } catch (e) { status.innerText = "Search Error"; }
+    };
+    
+        // --- UPDATE LOGIC: RE-PUSH TO TOP ---
+    window.updateData = async () => {
+        const status = document.getElementById('ctrl_status');
+        const now = new Date().toISOString();
+        const titleVal = document.getElementById('edit-title').innerText.trim();
+        const genKeys = (t) => {
+            if (!t) return [];
+            const clean = t.toLowerCase().replace(/[^\w\s]/g, ' ');
+            const words = clean.split(/\s+/).filter(w => w.length > 1);
+            return [...new Set(words)];
+        };
+
+        const data = { 
+            title: titleVal, 
+            keywords: genKeys(titleVal),
+            mediaImage: document.getElementById('edit-media').innerText.trim(), 
+            videoDuration: document.getElementById('edit-duration').innerText.trim(), 
+            youtubeEmbed: document.getElementById('edit-yt').innerText.trim(), 
+            readMore: document.getElementById('edit-readMore').innerText.trim() || "",
+            paragraphs: document.getElementById('edit-paragraphs').innerText.split('\n').filter(p => p.trim() !== ''), 
+            lastUpdated: now 
+        };
+        
+        try {
+            status.innerText = "Updating...";
+            await runTransaction(db, async (transaction) => {
+                const statsRef = doc(db, "total_collection", "global_stats");
+                const statsSnap = await transaction.get(statsRef);
+                
+                if (!statsSnap.exists()) throw "Stats not found";
+                
+                let allIds = statsSnap.data().allIds || [];
+                
+                // আইডিটি পুরনো পজিশন থেকে সরিয়ে শীর্ষে নিয়ে আসা
+                allIds = allIds.filter(item => item.id !== window.currentId);
+                allIds.unshift({ id: window.currentId, t: now });
+
+                transaction.update(doc(db, "posts", window.currentId), data);
+                transaction.update(statsRef, { 
+                    allIds: allIds, 
+                    lastGlobalUpdate: now 
+                });
+            });
+
+            status.innerHTML = `<span style="color:var(--success)">✅ Successfully Pushed to Top!</span>`;
+            setTimeout(() => location.reload(), 1500);
+        } catch (e) { status.innerText = "Update Failed!"; }
+    };
+    
+    // --- DELETE LOGIC: WITH DELETE SIGNAL ---
+    window.deleteData = async () => {
+        if(!confirm("Delete forever?")) return;
+        const status = document.getElementById('ctrl_status');
+        const now = new Date().toISOString();
+        try {
+            await runTransaction(db, async (transaction) => {
+                const statsRef = doc(db, "total_collection", "global_stats");
+                const statsSnap = await transaction.get(statsRef);
+                
+                if (!statsSnap.exists()) throw "Stats not found";
+                
+                let allIds = statsSnap.data().allIds || [];
+                let total = statsSnap.data().total_posts || 0;
+
+                // আইডিটি লিস্ট থেকে সরিয়ে ফেলা
+                allIds = allIds.filter(item => item.id !== window.currentId);
+
+                transaction.delete(doc(db, "posts", window.currentId));
+                transaction.update(statsRef, { 
+                    allIds: allIds, 
+                    total_posts: Math.max(0, total - 1), 
+                    lastGlobalDelete: now // এখানে ডিলিট সিগন্যাল যাবে
+                });
+            });
+
+            status.innerHTML = `<span style="color:var(--error)">🗑️ Deleted Successfully!</span>`;
+            setTimeout(() => location.reload(), 1500);
+        } catch (e) { status.innerText = "Delete Error!"; }
+    };
+    
+    window.onload = () => { 
+        document.getElementById('up_duration').value = "02:" + Math.floor(Math.random()*40+10).toString().padStart(2,'0') + ":00"; 
+    };
+</script>
+</body>
+</html>
